@@ -1,0 +1,6 @@
+{
+  "test_app.py::FlaskTestCase::test_index": true, 
+  "test_app.py::FlaskTestCase::test_posts_show_up_on_main_page": true, 
+  "test_app.py::FlaskTestCase::testing_the_post": true, 
+  "test_app.py::test_empty_db": true
+}
