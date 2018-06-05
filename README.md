@@ -12,14 +12,14 @@ With Celery help, it will handle incoming emails thru POST request.
 `$ flask db init`
 #### DB migrate
 `$ flask db migrate`
-### DB upgrade
+#### DB upgrade
 `$ flask db upgrade`
 
-## Start redis server
+#### Start redis server
 `$ ./run-redis.sh`
 
-## Start celery task
+#### Start celery task
 `../venv/bin/celery worker -A app.celery --loglevel=info`
 
-## Deployment
+#### Deployment
 `$ flask run`
