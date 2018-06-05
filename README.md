@@ -10,4 +10,4 @@ With Celery help, it will handle incoming emails thru POST request.
 (fill in the blank)
 
 ## Deployment
-`<$ flask run>` 
+`$ flask run` 
