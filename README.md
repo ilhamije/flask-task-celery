@@ -3,14 +3,14 @@
 This is an experimental project with Flask.
 With Celery help, it will handle incoming emails thru POST request.
 
+#### Environment and server
+(manually)
+export APP_SETTINGS='development'
+export FLASK_RUN=run.py
 
-## Environment and Server
-(fill in the blank)
-
-## Database
-### Initialize
+#### DB Initialize
 `$ flask db init`
-### DB migrate
+#### DB migrate
 `$ flask db migrate`
 ### DB upgrade
 `$ flask db upgrade`
