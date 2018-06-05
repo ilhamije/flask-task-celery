@@ -5,8 +5,8 @@ With Celery help, it will handle incoming emails thru POST request.
 
 #### Environment and server
 (manually)
-export APP_SETTINGS='development'
-export FLASK_RUN=run.py
+`export APP_SETTINGS='development'`
+`export FLASK_RUN=run.py`
 
 #### DB Initialize
 `$ flask db init`
