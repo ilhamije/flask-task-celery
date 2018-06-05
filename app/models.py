@@ -11,10 +11,10 @@ local_sg = utc.to('Asia/Singapore').format('DD MMM YYYY hh:mm')
 
 class Bucket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    event_id = db.Column(db.Integer, unique=True)
-    email_subject = db.Column(db.String)
-    email_content = db.Column(db.String)
-    timestamp = db.Column(db.String)
+    event_id = db.Column(db.Integer, nullable=False)
+    email_subject = db.Column(db.String, nullable=False)
+    email_content = db.Column(db.String, nullable=False)
+    timestamp = db.Column(db.String, nullable=False)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, event_id, email_subject, email_content, timestamp):

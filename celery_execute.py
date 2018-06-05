@@ -9,7 +9,7 @@ app.config['CELERY_BROKER_URL'] = 'amqp://localhost/'
 db = SQLAlchemy(app)
 celery = make_celery(app)
 
-# continue from here..
+
 
 if __name__ == '__main__':
     app.run(debug=True)

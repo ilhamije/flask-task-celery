@@ -27,20 +27,31 @@ def create_app(config_name):
         buckets = db.session.query(Bucket).all()
         return buckets_schema.jsonify(buckets)
 
+
     @app.route('/save_emails', methods=['POST'])
     def add_bucket():
-        event_id         = request.json['event_id']
-        email_subject 	 = request.json['email_subject']
-        email_content 	 = request.json['email_content']
-        timestamp 	     = request.json['timestamp']
 
-        new_bucket = Bucket(
-            event_id=event_id,
-            email_subject=email_subject,
-            email_content=email_content,
-            timestamp=timestamp
+        try:
+            eventid          = request.json['event_id']
+            emailsubject 	 = request.json['email_subject']
+            emailcontent 	 = request.json['email_content']
+            timestamp 	     = request.json['timestamp']
+
+            new_bucket = Bucket(
+                event_id=eventid,
+                email_subject=emailsubject,
+                email_content=emailcontent,
+                timestamp=timestamp
             )
-        new_bucket.save()
-        return bucket_schema.jsonify(new_bucket), 201
+            new_bucket.save()
+            return bucket_schema.jsonify(new_bucket), 201
+
+        except KeyError as e:
+            return jsonify({
+                'Description':'Bad request',
+                'Error':400,
+                'Message':'Please fix this field: '+unicode(e)
+                }), 400
+
 
     return app
