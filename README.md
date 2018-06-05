@@ -7,7 +7,6 @@ With Celery help, it will handle incoming emails thru POST request.
 ## Environment and Server
 (fill in the blank)
 
-## Database
 ### Initialize
 `$ flask db init`
 ### DB migrate
@@ -16,7 +15,10 @@ With Celery help, it will handle incoming emails thru POST request.
 `$ flask db upgrade`
 
 ## Start redis server
-`$ ./run-redis.sh`
+`$ ./run-redis.sh` (one time)
+
+go to redis-stable/src/
+`$ ./run-server.sh` (every time)
 
 ## Start celery task
 `../venv/bin/celery worker -A app.celery --loglevel=info`

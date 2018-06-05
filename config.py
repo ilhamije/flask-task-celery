@@ -14,10 +14,10 @@ class StagingConfig(Config):
     DEBUG = True
 
 class DevelopmentConfig(Config):
-    DEVELOPMENT = True
-    DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://jhonny:depp@localhost/emailbucket'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    DEVELOPMENT = True
+    DEBUG = True
 
     # Celery configuration
     CELERY_BROKER_URL = 'redis://localhost:6379'
