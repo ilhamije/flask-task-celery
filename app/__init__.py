@@ -30,9 +30,17 @@ def create_app(config_name):
 
     @app.route('/save_emails', methods=['POST'])
     def add_bucket():
-        email_subject 	= request.json['email_subject']
-        email_content 	= request.json['email_content']
-        new_bucket = Bucket(email_subject=email_subject, email_content=email_content)
+        event_id         = request.json['event_id']
+        email_subject 	 = request.json['email_subject']
+        email_content 	 = request.json['email_content']
+        timestamp 	     = request.json['timestamp']
+
+        new_bucket = Bucket(
+            event_id=event_id,
+            email_subject=email_subject,
+            email_content=email_content,
+            timestamp=timestamp
+            )
         new_bucket.save()
         return bucket_schema.jsonify(new_bucket), 201
 
