@@ -11,7 +11,7 @@ local_sg = utc.to('Asia/Singapore').format('DD MMM YYYY hh:mm')
 
 class Bucket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    event_id = db.Column(db.Integer, nullable=False)
+    event_id = db.Column(db.Integer, unique=True, nullable=False)
     email_subject = db.Column(db.String, nullable=False)
     email_content = db.Column(db.String, nullable=False)
     timestamp = db.Column(db.String, nullable=False)
@@ -26,3 +26,8 @@ class Bucket(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+class EmailAddress(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False)
+    bucket_event_id = db.Column(db.Integer, db.ForeignKey('bucket.event_id'), nullable=True)
