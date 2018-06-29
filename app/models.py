@@ -31,3 +31,17 @@ class EmailAddress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False)
     bucket_event_id = db.Column(db.Integer, db.ForeignKey('bucket.event_id'), nullable=True)
+
+    def __init__(self, email):
+        self.email = email
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return EmailAddress.query.all()
+
+    def __repr__(self):
+        return "<Bucketlist: {}>".format(self.name)
