@@ -26,6 +26,7 @@ With Celery help, it will handle POST methods and execute email based on certain
 `$ flask run`
 
 #### example POST request with postman
+##### timestamp in Singapore time
 {
 	"event_id": "41",
 	"email_subject": "Discount of the month, just for you.",

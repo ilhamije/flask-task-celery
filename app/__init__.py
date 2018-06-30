@@ -1,4 +1,4 @@
-import os
+import os, json
 
 from dateutil.parser import parse
 from datetime import datetime, timedelta
@@ -20,9 +20,9 @@ app = Flask(__name__)
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'kettopikeru' # os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = '789632145' # os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = 'kettopikeru@gmail.com'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
 
 mail = Mail(app)
 
@@ -37,27 +37,19 @@ celery.conf.update(app.config)
 ma.init_app(app)
 
 bucket_schema = BucketSchema()
-buckets_schema = BucketSchema(many=True)
-
-emailaddress_schema = EmailAddressSchema()
-emailaddresses_schema = EmailAddressSchema(many=True)
 
 
 @celery.task
-def execute_email(emailsubject):
+def execute_email(toemail,eventid,emailsubject,emailcontent):
     """Background task to execute email."""
+    sender = app.config['MAIL_DEFAULT_SENDER']
+    subject = str(emailsubject) + ' | ' + eventid
+    msg = Message(subject, sender=sender, recipients=[toemail])
+    msg.body = emailcontent
 
     with app.app_context():
-        subject = str(emailsubject)
-        sender = app.config['MAIL_DEFAULT_SENDER']
-        recipients = ['ilhamije@gmail.com']
-        msg = Message(subject, sender=sender, recipients=recipients)
-        msg.body = 'This is a test email sent from a background Celery task.'
         mail.send(msg)
-        return "Email sent"
-
-    # with app.app_context():
-    #     return "email sent to : " + str(email_subject)
+        return "Email sent! "
 
 
 def create_app(config_name):
@@ -69,7 +61,6 @@ def create_app(config_name):
 
     @app.route('/save_emails', methods=['POST'])
     def add_bucket():
-
         try:
             eventid          = request.json['event_id']
             emailsubject 	 = request.json['email_subject']
@@ -84,67 +75,23 @@ def create_app(config_name):
             )
             new_bucket.save()
 
-            emails = EmailAddress.query.filter_by(bucket_event_id=eventid).all()
-            print emails
-
-            # send email
-            msg = Message('Hello from the other side',
-                        recipients=['ilhamije@gmail.com'])
-            msg.body = 'This is a test email sent from a background Celery task.'
-
-            # async task
             process_time_utc = parse(timestamp) - timedelta(hours=8)
             print "process_time_utc: " + str(process_time_utc)
-            execute_email.apply_async(
-                args=[emailsubject],
-                eta=process_time_utc)
 
-            # test
-            # msg = "humm... vree"
-            # # async task
-            # process_time_utc = parse(timestamp) - timedelta(hours=8)
-            # print "process_time_utc: " + str(process_time_utc)
-            # execute_email.apply_async(
-            #     args=[msg],
-            #     eta=process_time_utc)
+            emailrecipients = EmailAddress.query.filter_by(event_id=eventid).all()
+            if len(emailrecipients) > 0:
+                for toemail in emailrecipients:
+                    toemail = str(toemail)
+                    execute_email.apply_async(
+                        args=[toemail,eventid,emailsubject,emailcontent,],
+                        eta=process_time_utc)
+                taskmsg = "Task added."
+            else:
+                taskmsg = "Email address of eventid:%s is not exist." % eventid
 
+            print taskmsg
             return bucket_schema.jsonify(new_bucket), 201
-
         except IntegrityError as e:
             db.session.rollback()
             return jsonify({'Message': e.message})
-
-
-    # @app.route('/emaillists/', methods=['GET','POST'])
-    # def emaillist():
-    #     if request.method == 'POST':
-            # email           = request.json['email']
-            # bucket_event_id = request.json['bucket_event_id']
-            #
-            # new_email = EmailAddress(
-            #     email           = email,
-            #     bucket_event_id = bucket_event_id
-            # )
-            # print new_email
-            # new_email.save()
-            # return emailaddress_schema.jsonify(new_bucket), 201
-
-        # else:
-            # GET
-            # emaillists = EmailAddress.get_all()
-            # results = []
-
-            # for emaillist in emaillists:
-            #     obj = {
-            #         'id': emaillist.id,
-            #         'email': emaillist.email,
-            #         'bucket_event_id': emaillist.bucket_event_id
-            #     }
-            #     results.append(obj)
-            #
-            # response = jsonify(results)
-            # response.status_code = 201
-
-            # return emailaddresses_schema.jsonify(emaillists), 201
-
     return app
