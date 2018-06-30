@@ -36,10 +36,13 @@ class EmailAddress(db.Model):
     email = db.Column(db.String(120), nullable=False)
     event_id = db.Column(db.Integer)
 
-
     def __init__(self, email, event_id):
         self.email = str(email)
         self.event_id = event_id
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
     def __repr__(self):
         return '{}'.format(self.email)
