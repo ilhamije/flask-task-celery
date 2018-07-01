@@ -33,12 +33,12 @@ Go to app/config.py change these:
 
 #### example POST request with postman
 - timestamp in Singapore time
-{
+`{
 	"event_id": "41",
 	"email_subject": "Discount of the month, just for you.",
 	"email_content": "It's a body content. Just for a test. It's a body content. Just for a test.",
 	"timestamp": "28 Jun 2018 10:22"
-}
+}`
 
 #### Some insight
 The purpose of this project is to save four parameters ( event_id, email_subject, email_content, timestamp ) to database. After data saved into database, it create a celery task that will be executed later based on timestamp ( ex : Singapore time ). If there is at least an email address. The task will sent it when the time is hit.
