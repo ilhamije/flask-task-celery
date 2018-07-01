@@ -44,5 +44,17 @@ class EmailAddress(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    @staticmethod
+    def get_all():
+        return EmailAddress.query.all()
+
+    def get_by(eventid):
+        result = EmailAddress.query.filter_by(event_id=eventid).all()
+        return result
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     def __repr__(self):
         return '{}'.format(self.email)

@@ -22,6 +22,8 @@ celery.conf.update(app.config)
 
 ma.init_app(app)
 bucket_schema = BucketSchema()
+emailaddress_schema = EmailAddressSchema()
+emailaddresses_schema = EmailAddressSchema(many=True)
 
 @celery.task
 def execute_email(toemail,eventid,emailsubject,emailcontent):
@@ -37,11 +39,34 @@ def execute_email(toemail,eventid,emailsubject,emailcontent):
 
 
 def create_app(config_name):
-    app.config.from_object('config')
+    # app.config.from_object('config')
     app.config.from_object(app_config[config_name])
 
     db.init_app(app)
     migrate = Migrate(app, db)
+
+
+    @app.route('/')
+    def index():
+        return jsonify({'Message': "This is not the droid you are looking for."})
+
+    @app.route('/email_list', methods=['GET', 'POST'])
+    def email_list():
+        # GET
+        if request.method == 'POST':
+            email           = request.json['email']
+            eventid         = request.json['event_id']
+            new_emaillist   = EmailAddress(
+                email       = email,
+                event_id    = eventid
+            )
+            new_emaillist.save()
+            return emailaddress_schema.jsonify(new_emaillist), 201
+        else:
+            emaillists = EmailAddress.get_all()
+            result = emailaddresses_schema.dump(emaillists)
+            return jsonify(result.data)
+
 
     @app.route('/save_emails', methods=['POST'])
     def add_bucket():
@@ -75,7 +100,9 @@ def create_app(config_name):
 
             print taskmsg
             return bucket_schema.jsonify(new_bucket), 201
+
         except IntegrityError as e:
             db.session.rollback()
             return jsonify({'Message': e.message})
+
     return app
